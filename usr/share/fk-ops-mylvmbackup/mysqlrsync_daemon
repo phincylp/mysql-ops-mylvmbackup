@@ -1,0 +1,17 @@
+#!/bin/bash
+
+sleep 5
+
+ps=$(ps auxw |grep rsync | grep ops-storage | grep -v grep | awk '{print $2}' )
+if [ ! -z "$ps" ];then
+limitcnt=$(ps auxw |grep cpulimit | grep $ps |grep -v grep |wc -l |  awk '{print $1}' )
+echo $limitcnt
+if [ $limitcnt -ge 1 ];then
+echo "already running"
+else
+echo "trigger"
+/usr/bin/cpulimit -p $ps -l 30 -z
+fi
+else
+echo "no rsync run"
+fi

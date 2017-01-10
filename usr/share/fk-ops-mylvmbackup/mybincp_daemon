@@ -1,0 +1,25 @@
+#!/bin/bash
+sleep 3600
+
+# Check if the host is am member of fk-hs-db tag, marking it as a hot stand by server.
+# If not, then do nothing.
+
+host=$(/bin/hostname)
+/usr/local/bin/hostdb get tags/fk-hs-db/members | egrep -q $host 2>> /dev/null
+
+if [[ $? -ne 0 ]] ; then
+		exit
+fi
+
+
+cnt=$(/bin/ps auxw |grep bin_copy.sh |grep -v grep |wc -l)
+if(( $cnt > 0 ));
+then
+echo "$cnt: Another instance running. Exitting"
+exit
+fi
+
+/usr/bin/perl  /usr/bin/unmap.pl
+/bin/sync  && /bin/sync  && /bin/sync && /sbin/sysctl -w vm.drop_caches=3 && /sbin/sysctl -w vm.drop_caches=0
+exec 2>&1
+exec /bin/bash /usr/bin/bin_copy.sh 2>&1

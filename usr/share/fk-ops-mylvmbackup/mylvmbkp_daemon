@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Check if the host is am member of fk-hs-db tag, marking it as a hot stand by server.
+# If not, then do nothing.
+export LC_ALL=C
+
+sleep 6
+
+exec 2>&1
+exec /usr/bin/perl  /usr/share/fk-ops-mylvmbackup/mysqlbkp_daemon.pl 2>&1  >> /var/log/fk-ops-mylvmbackup.err

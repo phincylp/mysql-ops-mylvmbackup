@@ -1,0 +1,21 @@
+#!/bin/bash
+  
+[ $# -lt 1 ] && echo "Usage `basename $0` <env>  [-nodeploy/-nobuild]" && exit 1
+
+DOMAIN=$1
+PACKAGE="fk-ops-mylvmbackup"
+shift 1
+case $DOMAIN in 
+    nm|pznm|eng|sb|vl|stage|mp|mp2)
+	TARGET=${DOMAIN}
+    ;; 
+    *) 
+	echo "Target is invalid, please check the script for available targets" && exit 2
+    ;; 
+esac
+
+TAG=release/${DOMAIN}-$(date +%Y%m%d-%H%M)${1}
+
+git tag -m "Promoting to $DOMAIN." $TAG 
+git push --tags
+

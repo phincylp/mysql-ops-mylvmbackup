@@ -1,0 +1,8 @@
+Package: fk-ops-mylvmbackup
+Version: 1._VERSION_
+Architecture: all
+Section: domain/ops
+Priority: standard
+Maintainer: Sysops <sysadmin@domain.com>
+Depends: perl, cpulimit, lftp, sed, libconfig-inifiles-perl, proftpd, build-essential, libc6-dev,  libinline-perl,  libparse-recdescent-perl, bc, fk-mysql-deployer
+Description: Mylvmbackup

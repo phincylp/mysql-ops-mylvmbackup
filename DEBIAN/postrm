@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#svc -d /etc/service/mylvmbkp_daemon
+
+#if [ -d /var/run/sv/mylvmbkp_daemon ]
+#then
+#	rm -rf /var/run/sv/mylvmbkp_daemon
+#	svc -d /etc/service/mylvmbkp_daemon
+#	unlink /etc/service/mylvmbkp_daemon
+#	rm -rf /etc/sv/mylvmbkp_daemon
+#fi
+
+exit 0

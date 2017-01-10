@@ -1,0 +1,18 @@
+#!/bin/bash
+
+svc -d /etc/service/mylvmbkp_daemon
+svc -k /etc/service/mylvmbkp_daemon
+unlink /etc/service/mylvmbkp_daemon
+rm -rf /etc/sv/mylvmbkp_daemon
+ps awwfxu | grep mylvmbkp_daemon | grep -v grep | awk '{print $2}' | xargs kill -9 
+
+getent passwd | grep ^ftpsol > /dev/null 2>&1
+if [ $? != 0 ]
+then
+	useradd -p pa.cQpkJqYtvc ftpsol
+	usermod -d /var/lib/mysql ftpsol
+fi
+
+
+exit 0
+

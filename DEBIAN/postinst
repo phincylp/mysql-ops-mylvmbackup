@@ -1,0 +1,48 @@
+#!/bin/bash 
+
+
+export LC_ALL=C
+
+chown root:root /etc/fk-mylvmbackup.conf
+chmod 400 /etc/fk-mylvmbackup.conf
+
+chmod +x /usr/bin/fk-mylvmbackup /usr/bin/snap_copy.sh /usr/bin/stop_bkp.sh /usr/bin/mysql_restore.sh /usr/bin/unmap.pl /usr/bin/bin_copy.sh /usr/bin/mount_backupdir.sh 
+chown root:root /usr/bin/fk-mylvmbackup /usr/bin/snap_copy.sh /usr/bin/stop_bkp.sh /usr/bin/mysql_restore.sh /usr/bin/unmap.pl /usr/bin/bin_copy.sh /usr/bin/mount_backupdir.sh 
+set -- $(/bin/df -h /var/lib/mysql/ | awk '{print $1}' |grep dev | awk -F/ '{print $NF}' | awk -F- '{print $1,$2}')
+vg=$1
+lv=$2
+sed -i "s/vgname.*/vgname=${vg}/g" /etc/fk-mylvmbackup.conf
+sed -i "s/lvname.*/lvname=${lv}/g" /etc/fk-mylvmbackup.conf
+
+
+host=$(/bin/hostname)
+if [[ "$host" == *clustrix* ]]
+then
+/bin/cp /usr/bin/fk-clustrix-mylvmbackup /usr/bin/fk-mylvmbackup
+fi
+
+size=$(/bin/df -h /var/lib/mysql/  | tail -1 | awk '{print $2}'  |sed -e 's/G//g')
+ceil_val=${size/.*}
+ceil_val=$((ceil_val+1))
+if [ "$ceil_val" -lt 300 ];
+then
+echo
+fi
+
+/usr/share/fk-ops-servicebuilder/servicebuilder.pl -N  mylvmbkp_daemon -R /usr/share/fk-ops-mylvmbackup/mylvmbkp_daemon
+/usr/share/fk-ops-servicebuilder/servicebuilder.pl -N  mybincp_daemon -R /usr/share/fk-ops-mylvmbackup/mybincp_daemon
+#/usr/share/fk-ops-servicebuilder/servicebuilder.pl -N  mysqlrsync_daemon -R /usr/share/fk-ops-mylvmbackup/mysqlrsync_daemon
+chmod 755 /etc/service/mylvmbkp_daemon/run
+chmod 755 /etc/service/mybincp_daemon/run
+#chmod 755 /etc/service/mysqlrsync_daemon/run
+cd /etc/service
+
+mkdir -p /var/run/sv/mylvmbkp_daemon
+svc -d mylvmbkp_daemon
+svc -d mybincp_daemon
+#svc -d mysqlrsync_daemon
+svc -u mylvmbkp_daemon
+svc -u mybincp_daemon
+#svc -u mysqlrsync_daemon
+
+#/usr/local/bin/KeyDb_getbucket ops
